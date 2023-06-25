@@ -44,6 +44,10 @@ class PackagistLinkHandling implements LinkHandlingInterface
             $parameters['package']
         );
 
+        if (isset($parameters['info']) && $parameters['info'] !== '') {
+            $urn .= '&info=' . $parameters['info'];
+        }
+
         return $urn;
     }
 

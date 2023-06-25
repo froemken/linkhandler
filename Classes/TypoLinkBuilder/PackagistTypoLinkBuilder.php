@@ -22,10 +22,19 @@ class PackagistTypoLinkBuilder extends AbstractTypolinkBuilder
     public function build(array &$linkDetails, string $linkText, string $target, array $conf): LinkResultInterface
     {
         try {
-            $linkText .= sprintf(
-                ' <span>(Total Downloads: %d)</span>',
-                $this->getDownloads($linkDetails, 'total')
-            );
+            if (in_array($linkDetails['info'] ?? '', ['total', 'monthly', 'daily'])) {
+                $linkText .= sprintf(
+                    ' <span>(%s downloads: %d)</span>',
+                    ucfirst($linkDetails['info']),
+                    $this->getDownloads($linkDetails, $linkDetails['info'])
+                );
+            }
+            if (($linkDetails['info'] ?? '') === 'favers') {
+                $linkText .= sprintf(
+                    ' <span>(Favs: %d)</span>',
+                    $this->getFavorites($linkDetails)
+                );
+            }
         } catch (\Exception $exception) {
             // on exception keep $linkText untouched
         }
@@ -65,6 +74,31 @@ class PackagistTypoLinkBuilder extends AbstractTypolinkBuilder
         }
 
         return $info['downloads'][$interval] ?? 0;
+    }
+
+    private function getFavorites(array $linkDetails): int
+    {
+        $uri = sprintf(
+            'https://packagist.org/packages/%s/%s.json',
+            $linkDetails['vendor'],
+            $linkDetails['package']
+        );
+
+        $response = $this->getRequestFactory()->request(
+            $uri,
+            'GET',
+            [
+                'connect_timeout' => 2,
+                'read_timeout' => 1,
+                'timeout' => 2,
+            ]
+        );
+
+        if ($response->getStatusCode() === 200) {
+            $info = \json_decode((string)$response->getBody(), true);
+        }
+
+        return $info['package']['favers'] ?? 0;
     }
 
     private function getRequestFactory(): RequestFactory

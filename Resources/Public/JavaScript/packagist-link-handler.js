@@ -13,7 +13,7 @@ class MailLinkHandler {
     new RegularEvent('submit', ((event, element) => {
       event.preventDefault();
       const urlSearchParams = new URLSearchParams;
-      for (const formInputName of ["vendor", "package"]) {
+      for (const formInputName of ["vendor", "package", "info"]) {
         const formInputElement = element.querySelector('[name="' + formInputName + '"]');
         formInputElement?.value.length && urlSearchParams.set(formInputName, encodeURIComponent(formInputElement.value))
       }

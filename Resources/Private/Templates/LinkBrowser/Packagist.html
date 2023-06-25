@@ -9,34 +9,58 @@
         <div class="element-browser-form-group">
             <label for="vendor" class="form-label">Vendor</label>
             <div class="input-group">
-                <input
-                    id="vendor"
-                    type="text"
-                    name="vendor"
-                    size="30"
-                    class="form-control"
-                    value="{vendor}"
-                    placeholder="vendor"
-                    required />
+                <input id="vendor"
+                       type="text"
+                       name="vendor"
+                       size="30"
+                       class="form-control"
+                       value="{vendor}"
+                       placeholder="vendor"
+                       required />
             </div>
         </div>
         <div class="element-browser-form-group">
             <label for="package" class="form-label">Package</label>
             <div class="input-group">
-                <input
-                    id="package"
-                    type="text"
-                    name="package"
-                    size="30"
-                    class="form-control"
-                    value="{package}"
-                    placeholder="package"
-                    required />
+                <input id="package"
+                       type="text"
+                       name="package"
+                       size="30"
+                       class="form-control"
+                       value="{package}"
+                       placeholder="package"
+                       required />
+            </div>
+        </div>
+        <div class="element-browser-form-group">
+            <label for="info" class="form-label">Show information</label>
+            <div class="input-group">
+                <select id="info"
+                        type="text"
+                        name="info"
+                        size="1"
+                        class="form-control">
+                    <f:render section="renderOption" arguments="{info: info, value: 'total', label: 'Downloads: total'}" />
+                    <f:render section="renderOption" arguments="{info: info, value: 'monthly', label: 'Downloads: monthly'}" />
+                    <f:render section="renderOption" arguments="{info: info, value: 'daily', label: 'Downloads: daily'}" />
+                    <f:render section="renderOption" arguments="{info: info, value: 'favers', label: 'Favorites'}" />
+                </select>
             </div>
         </div>
         <div class="element-browser-form-group">
             <input class="btn btn-primary" type="submit" value="{f:translate(key: 'LLL:EXT:backend/Resources/Private/Language/locallang_browse_links.xlf:setLink')}" />
         </div>
     </form>
+</f:section>
+
+<f:section name="renderOption">
+    <f:if condition="{info} == {value}">
+        <f:then>
+            <option value="{value}" selected>{label}</option>
+        </f:then>
+        <f:else>
+            <option value="{value}">{label}</option>
+        </f:else>
+    </f:if>
 </f:section>
 </html>
