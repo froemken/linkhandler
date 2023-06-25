@@ -16,6 +16,11 @@ use TYPO3\CMS\Core\LinkHandling\LinkHandlingInterface;
 class PackagistLinkHandling implements LinkHandlingInterface
 {
     /**
+     * The Base URN for this link handling to act on
+     */
+    protected string $baseUrn = 't3://packagist';
+
+    /**
      * Returns a string interpretation of the link href query from objects, something like
      *
      *  - t3://page?uid=23&my=value#cool
@@ -25,12 +30,21 @@ class PackagistLinkHandling implements LinkHandlingInterface
      *  - mailto:mac@safe.com
      *
      * array of data -> string
-     *
-     * @param array $parameters
      */
     public function asString(array $parameters): string
     {
-        return 't3://packagist?vendor=stefanfroemken&package=mysqlreport&info=stats';
+        if (empty($parameters['vendor']) || empty($parameters['package'])) {
+            throw new \InvalidArgumentException('The PackagistLinkHandling expects vendor and package as $parameter configuration.', 1687712731);
+        }
+
+        $urn = $this->baseUrn;
+        $urn .= sprintf(
+            '?vendor=%s&package=%s',
+            $parameters['vendor'],
+            $parameters['package']
+        );
+
+        return $urn;
     }
 
     /**

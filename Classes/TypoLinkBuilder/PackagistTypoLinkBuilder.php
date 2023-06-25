@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace StefanFroemken\Linkhandler\TypoLinkBuilder;
 
-use TYPO3\CMS\Core\Package\PackageManager;
+use TYPO3\CMS\Core\Http\RequestFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Typolink\AbstractTypolinkBuilder;
 use TYPO3\CMS\Frontend\Typolink\LinkResult;
@@ -21,13 +21,14 @@ class PackagistTypoLinkBuilder extends AbstractTypolinkBuilder
 {
     public function build(array &$linkDetails, string $linkText, string $target, array $conf): LinkResultInterface
     {
-        $uri = sprintf(
-            'https://packagist.org/packages/%s/%s/stats.json',
-            $linkDetails['vendor'],
-            $linkDetails['package']
-        );
-        $response = \json_decode(file_get_contents($uri));
-        $linkText .= ' <span>(Total Downloads: ' . $response->downloads->total . ')</span>';
+        try {
+            $linkText .= sprintf(
+                ' <span>(Total Downloads: %d)</span>',
+                $this->getDownloads($linkDetails, 'total')
+            );
+        } catch (\Exception $exception) {
+            // on exception keep $linkText untouched
+        }
 
         $uri = sprintf(
             'https://packagist.org/packages/%s/%s',
@@ -41,8 +42,33 @@ class PackagistTypoLinkBuilder extends AbstractTypolinkBuilder
             ->withLinkText($linkText);
     }
 
-    private function getPackageManager(): PackageManager
+    private function getDownloads(array $linkDetails, string $interval): int
     {
-        return GeneralUtility::makeInstance(PackageManager::class);
+        $uri = sprintf(
+            'https://packagist.org/packages/%s/%s/stats.json',
+            $linkDetails['vendor'],
+            $linkDetails['package']
+        );
+
+        $response = $this->getRequestFactory()->request(
+            $uri,
+            'GET',
+            [
+                'connect_timeout' => 2,
+                'read_timeout' => 1,
+                'timeout' => 2,
+            ]
+        );
+
+        if ($response->getStatusCode() === 200) {
+            $info = \json_decode((string)$response->getBody(), true);
+        }
+
+        return $info['downloads'][$interval] ?? 0;
+    }
+
+    private function getRequestFactory(): RequestFactory
+    {
+        return GeneralUtility::makeInstance(RequestFactory::class);
     }
 }

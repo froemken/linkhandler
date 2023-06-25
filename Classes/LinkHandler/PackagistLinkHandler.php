@@ -68,6 +68,8 @@ class PackagistLinkHandler implements LinkHandlerInterface, LinkHandlerViewProvi
 
             return true;
         }
+
+        return false;
     }
 
     /**
@@ -75,7 +77,11 @@ class PackagistLinkHandler implements LinkHandlerInterface, LinkHandlerViewProvi
      */
     public function formatCurrentUrl(): string
     {
-        return '<h1>Narf</h1>';
+        return sprintf(
+            'https://packagist.org/packages/%s/%s',
+            $this->linkParts['url']['vendor'] ?? '',
+            $this->linkParts['url']['package'] ?? ''
+        );
     }
 
     /**
@@ -84,8 +90,12 @@ class PackagistLinkHandler implements LinkHandlerInterface, LinkHandlerViewProvi
     public function render(ServerRequestInterface $request): string
     {
         $this->pageRenderer->loadJavaScriptModule('@stefanfroemken/linkhandler/packagist-link-handler.js');
-        $this->view->assign('vendor', $this->linkParts['url']['vendor'] ?: '');
-        $this->view->assign('package', $this->linkParts['url']['package'] ?: '');
+
+        if (is_array($this->linkParts['url'] ?? null)) {
+            foreach ($this->linkParts['url'] as $name => $value) {
+                $this->view->assign($name, rawurldecode($value));
+            }
+        }
 
         return $this->view->render('LinkBrowser/Packagist');
     }
