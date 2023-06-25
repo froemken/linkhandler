@@ -1,0 +1,14 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  StefanFroemken\Linkhandler\:
+    resource: '../Classes/*'
+
+  # Needed to convert the link input field in TCEFORM into Packagist URI
+  StefanFroemken\Linkhandler\EventListener\ModifyLinkExplanationEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Backend\Form\Event\ModifyLinkExplanationEvent

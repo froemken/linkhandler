@@ -1,0 +1,27 @@
+{
+	"name": "stefanfroemken/linkhandler",
+	"type": "typo3-cms-extension",
+	"description": "TYPO3 extension containing LinkHandlers",
+	"homepage": "https://www.typo3lexikon.de",
+	"license": ["GPL-2.0-or-later"],
+	"authors": [
+		{
+			"name": "Stefan Froemken",
+			"email": "froemken@gmail.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"typo3/cms-core": "^12.4.2"
+	},
+	"autoload": {
+		"psr-4": {
+			"StefanFroemken\\Linkhandler\\": "Classes/"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "sf_linkhandler"
+		}
+	}
+}

@@ -1,0 +1,8 @@
+# Register link handlers
+TCEMAIN.linkHandler {
+  packagist {
+    handler = StefanFroemken\Linkhandler\LinkHandler\PackagistLinkHandler
+    label = Packagist
+    displayAfter = page,file,folder
+  }
+}
